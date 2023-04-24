@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { CrawlService } from './crawl.service';
 import { CreateCrawlDto } from './dto/create-crawl.dto';
 import { convertDto2Entity } from './converter/crawl.converter';
@@ -18,9 +18,16 @@ export class CrawlController {
     return { code: 1, data: null, message: '' };
   }
 
+  // @deprecated for testing raw sql
   @Get()
   async findAll() {
     const data = await this.crawlService.findAll();
+    return { code: 1, data, message: '' };
+  }
+
+  @Get('/recent/:days')
+  async findRecentDays(@Param('days') days: number) {
+    const data = await this.crawlService.findRecentDays(days);
     return { code: 1, data, message: '' };
   }
 }

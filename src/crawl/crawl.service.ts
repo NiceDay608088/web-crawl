@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { QueryTypes } from 'sequelize';
+import { QueryTypes, and, Op } from 'sequelize';
 import CrawlModel from '@/crawl/models/crawl.model';
 import DocumentModel from '@/crawl/models/document.model';
 import CrawlEntity from '@/crawl/entities/crawl.enttity';
 import cherrio from 'cheerio';
+import * as dayjs from 'dayjs';
 import {
   normalizeURL,
   fetchHtml,
@@ -73,6 +74,24 @@ export class CrawlService {
     );
     console.log('s==>', data);
     return data;
-    // return this.crawlModel.findAll();
+  }
+
+  async findRecentDays(days: number): Promise<CrawlEntity[]> {
+    const date = this.getDate(days);
+    console.log(date);
+    const data = await this.crawlModel.findAll({
+      where: and({ pid: null }, { cdate: { [Op.gte]: date } }),
+    });
+
+    return data;
+  }
+
+  getDate(days: number): string {
+    console.log('days', days);
+    const newDate = dayjs()
+      .add(-1 * days, 'day')
+      .format('YYYY-MM-DD HH:mm:ss');
+
+    return newDate;
   }
 }
