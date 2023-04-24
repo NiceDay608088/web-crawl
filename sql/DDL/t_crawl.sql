@@ -1,6 +1,6 @@
 CREATE TABLE t_crawl(
    id             bigint PRIMARY KEY     not null,
-   pid            bigint PRIMARY KEY             ,
+   pid            bigint                         ,
    url            text                   not null,
    cdate          timestamp                      ,
    creator        bigint                         ,
