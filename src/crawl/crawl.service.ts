@@ -7,11 +7,12 @@ import CrawlEntity from '@/crawl/entities/crawl.enttity';
 import cherrio from 'cheerio';
 import * as dayjs from 'dayjs';
 import {
-  normalizeURL,
+  // normalizeURL,
   fetchHtml,
   getUrlPrefix,
   getSubUrls,
 } from '@/utils/html.util';
+import normalizeUrl from '@/utils/normalize-url';
 import { trySetCache } from '@/utils/cache.util';
 
 @Injectable()
@@ -25,7 +26,7 @@ export class CrawlService {
 
   async create(crawlObj: CrawlEntity): Promise<CrawlModel> {
     // normalize URL
-    const urlStr = normalizeURL(crawlObj.url);
+    const urlStr = normalizeUrl(crawlObj.url, {});
     console.log('1==>', crawlObj);
 
     // deduplicate url in local cache
