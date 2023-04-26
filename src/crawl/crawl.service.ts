@@ -42,18 +42,42 @@ export class CrawlService {
     // console.log('2==>', o.id);
 
     // fetch html and store in database
-    const htmlStr = await fetchHtml(urlStr);
+    const originalHtmlStr = await fetchHtml(urlStr);
+    const htmlStr = this.formatHtml(originalHtmlStr);
+    const $ = cherrio.load(htmlStr);
+
+    const htmlText = this.getHtmlText($);
+    console.log('4==> ', htmlText);
     this.documentModel.removeAttribute('id');
-    await this.documentModel.create({ crawlId: o.id, html: htmlStr });
+    // await this.documentModel.create({ crawlId: o.id, html: htmlText });
 
     // fetch sub urls
-    await this.fetchSubUrls(o.id, urlStr, htmlStr);
+    //await this.fetchSubUrls(o.id, urlStr, $);
 
     return o;
   }
 
-  fetchSubUrls = async (pid: number, urlStr: string, htmlStr: string) => {
-    const $ = cherrio.load(htmlStr);
+  formatHtml = (html: string) => {
+    const pattern = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+    while (pattern.test(html)) {
+      html = html.replace(pattern, '');
+    }
+    return html;
+  };
+
+  getHtmlText = ($: cheerio.Root) => {
+    const t = $('html *')
+      .contents()
+      .map(function () {
+        return this.type === 'text' ? $(this).text() + ' ' : '';
+      })
+      .get()
+      .join('')
+      .replace(/(\s)+/g, ' ');
+    return t;
+  };
+
+  fetchSubUrls = async (pid: number, urlStr: string, $: cheerio.Root) => {
     const prefix = getUrlPrefix(urlStr);
     const subUrls = getSubUrls($, prefix);
 
