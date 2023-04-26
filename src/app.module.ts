@@ -17,6 +17,11 @@ dotenv.config();
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
+      pool: {
+        max: 20,
+        min: 1,
+        idle: 1000,
+      },
       define: {
         timestamps: false,
       },
